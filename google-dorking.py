@@ -47,49 +47,50 @@ def checkfile(cfile):
 	except Exception as Error:
 			print(Error)
 
-# DORKING FUNCTION
-def google_dorking(google, url, menu):
+# ERROR PROOF FUNCTION TO SEE IF INPUT FILE EXISTS	
+def checkdorks(cdorks):
+	try:
+		if os.path.isfile(cdorks):
+			return cdorks
+		else:
+			print ("File %s is missing in your script directory." % (cdorks))
+			exit()
+	except Exception as Error:
+			print(Error)
 
-	if menu == '1':
-		webbrowser.open_new_tab(google + 'site:' + url + '+intitle:index.of')
-	elif menu == '2':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:xml+|+ext:conf+|+ext:cnf+|+ext:reg+|+ext:inf+|+ext:rdp+|+ext:cfg+|+ext:txt+|+ext:ora+|+ext:ini')
-	elif menu == '3':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:sql+|+ext:dbf+|+ext:mdb')
-	elif menu == '4':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:log')
-	elif menu == '5':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:bkf+|+ext:bkp+|+ext:bak+|+ext:old+|+ext:backup')
-	elif menu == '6':
-		webbrowser.open_new_tab(google + 'site:' + url + '+inurl:login | admin | user | cpanel | account | moderator | /cp')
-	elif menu == '7':
-		webbrowser.open_new_tab(google + 'site:' + url + '+intext:"sql+syntax+near"+|+intext:"syntax+error+has+occurred"+|+intext:"incorrect+syntax+near"+|+intext:"unexpected+end+of+SQL+command"+|+intext:"Warning:+mysql_connect()"+|+intext:"Warning:+mysql_query()"+|+intext:"Warning:+pg_connect()"')
-	elif menu == '8':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:doc+|+ext:docx+|+ext:odt+|+ext:pdf+|+ext:rtf+|+ext:sxw+|+ext:psw+|+ext:ppt+|+ext:pptx+|+ext:pps+|+ext:csv')
-	elif menu == '9':
-		webbrowser.open_new_tab(google + 'site:' + url + '+ext:php+intitle:phpinfo+"published+by+the+PHP+Group"')
+# DORKING FUNCTION
+def google_dorking(google, url, dorks):
+	if url:
+		webbrowser.open_new_tab(google + 'site:' + url + '+' + dorks)
 	else:
-		print ("[ UNKNOWN ERROR ]")
+		webbrowser.open_new_tab(google + dorks)
+
+
+# DORKING FUNCTION
+def google_dorking_else(google, dorks):
+	
+	webbrowser.open_new_tab(google + dorks)
 
 def Main():
 	parser = argparse.ArgumentParser(description="Google Dorking is a computer hacking technique that uses Google Search and other Google Applications to find security holes in the configuration and computer code that websites use.", formatter_class=argparse.RawTextHelpFormatter)
-	parser.add_argument("-d", "--dorks", required=True, 
-		help="01: Directory Listing \n02: Configuration Files \n03: Database Files \n04: Log Files \n05: Backup and Old Files \n06: Login Pages \n07: SQL Errors \n08: Publicly Exposed Document \n09: PHP Information ")
-	parser.add_argument("-i", "--input", type=checkfile, required=False, help="Input File Location (EX: /Path/To/input.txt)")
+	parser.add_argument("-d", "--dorks", type=checkdorks, required=False, help="Input Dorks File Location (EX: /Path/To/droks.txt)")
 	parser.add_argument("-w", "--website", type=checkwebsite, required=False, help="Single website (EX: http://example.com)")
 	args = parser.parse_args()
 
 	google_url = "https://www.google.com/search?q="
 
-	# SINGLE WEBSITE FUNCTION
+	# WEBSITE FUNCTION
 	if args.website and args.dorks:
-		google_dorking(google_url, args.website, args.dorks)
-
-	# MULTIPLE WEBSITE FUNCTION
-	elif args.input and args.dorks:
-		with open(args.input) as o:
+		with open(args.dorks) as o:
 			for line in o.readlines():
-				google_dorking(google_url, line, args.dorks)
+				google_dorking(google_url, args.website, line)
+
+	# NO WEBSITE
+	else:
+		with open(args.dorks) as o:
+			for line in o.readlines():
+				google_dorking(google_url, None, line)
+
 
 if __name__ == "__main__":
 	Main()
